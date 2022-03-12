@@ -5,12 +5,17 @@ import mongooseUsersDatabase from '../../database/mongoose/mongoose.users';
 
 class UsersController {
 	async getUsers(req: Request, res: Response): Promise<void> {
-		const result = await mongooseUsersDatabase.getUsers();
-		if (result) {
-			res.status(200).json(result);
-			return;
-		} else {
-			res.status(404).json({ error: 'No users found.' });
+		try {
+			const result = await mongooseUsersDatabase.getUsers();
+			if (result) {
+				res.status(200).json(result);
+				return;
+			} else {
+				res.status(404).json({ error: 'No users found.' });
+				return;
+			}
+		} catch (err: any) {
+			res.status(500).json({ error: err.message });
 			return;
 		}
 	}
