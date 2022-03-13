@@ -6,14 +6,22 @@ import UserModel, { IUserDocument } from './schemas/user.schema';
 
 class Users implements IUsersDatabase {
 	public async getUsers(): Promise<User[] | null> {
-		const userDocuments: IUserDocument[] | null | void = await UserModel.find();
-		if (Array.isArray(userDocuments)) {
-			const users: User[] = new Array();
-			userDocuments.forEach((document: IUserDocument) => {
-				users.push(UserDocument2User(document));
-			});
+		try {
+			const userDocuments: IUserDocument[] = await UserModel.find();
+			if (Array.isArray(userDocuments)) {
+				const users: User[] = new Array();
+				userDocuments.forEach((document: IUserDocument) => {
+					const user = UserDocument2User(document);
+					if (user) {
+						users.push(user);
+					}
+				});
 
-			return users;
+				return users;
+			}
+		} catch (err: any) {
+			console.error(err); // TODO: transfer to a logger
+			throw new Error('Error occurred getting users.');
 		}
 
 		return null;
@@ -41,7 +49,7 @@ class Users implements IUsersDatabase {
 		}
 		const updateResult = await UserModel.updateOne({ _id }, user);
 		if (updateResult.matchedCount == 1) {
-			return {...currentUser, ...user};
+			return { ...currentUser, ...user };
 		}
 
 		return null;

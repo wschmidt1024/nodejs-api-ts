@@ -12,10 +12,8 @@ class PortfolioMongoose implements IPortfolioDatabase {
 			.catch((err: any) => {
 				if (err instanceof(mongoose.Error.MongooseServerSelectionError)) {
 					console.error(err); // TODO: transfer to a logger
-					throw new Error('Error connecting to the database.');
 				} else {
 					console.log(err); // TODO: transfer to a logger
-					throw new Error('Error connecting to the database.');
 				}
 			});
 	}
