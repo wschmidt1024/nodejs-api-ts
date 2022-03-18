@@ -1,7 +1,7 @@
-import { IUsersDatabase } from './database.users';
+/* eslint-disable no-unused-vars */
+import { CreateUser, UpdateUser, User } from '../models/user';
 
 export interface IPortfolioDatabase
 {
-    users: IUsersDatabase;
     connect(): Promise<void>;
 }

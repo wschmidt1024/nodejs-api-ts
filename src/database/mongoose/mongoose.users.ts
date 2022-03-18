@@ -61,4 +61,4 @@ class Users implements IUsersDatabase {
 	}
 }
 
-export default new Users();
+export default Users;
