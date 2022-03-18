@@ -4,5 +4,11 @@ export interface User {
     last: string;
 }
 
-export type CreateUser = Omit<User, 'id'>;
-export type UpdateUser = Omit<User, 'id'>;
+export interface CreateUser {
+    first: string;
+    last: string;
+}
+export interface UpdateUser {
+    first: string;
+    last: string;
+}

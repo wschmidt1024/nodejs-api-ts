@@ -1,11 +1,16 @@
 import mongoose from 'mongoose';
 
+import { IUsersDatabase } from '../interfaces/database.users';
 import { IPortfolioDatabase } from '../interfaces/portfolio.database';
 
 import Users from './mongoose.users';
 
-class PortfolioMongoose implements IPortfolioDatabase {
-	public users = Users;
+class MongooseConnection implements IPortfolioDatabase {
+	public users: IUsersDatabase;
+
+	constructor() {
+		this.users = new Users();
+	}
 
 	public async connect(): Promise<void> {
 		await mongoose.connect(process.env.MONGODB_CONNECTION_STRING || '')
@@ -19,4 +24,4 @@ class PortfolioMongoose implements IPortfolioDatabase {
 	}
 }
 
-export default new PortfolioMongoose();
+export default new MongooseConnection();
