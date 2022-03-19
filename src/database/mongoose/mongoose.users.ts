@@ -34,6 +34,14 @@ class Users implements IUsersDatabase {
 
 		return null;
 	}
+	public async getUserByUsername(username: string): Promise<User | null> {
+		const userDocument: IUserDocument | null = await UserModel.findOne({ username });
+		if (userDocument) {
+			return UserDocument2User(userDocument);
+		}
+
+		return null;
+	}
 	public async createUser(user: CreateUser): Promise<User | null> {
 		const userDocument: IUserDocument | void = await UserModel.create({ ...user });
 		if (userDocument) {
@@ -53,6 +61,19 @@ class Users implements IUsersDatabase {
 		}
 
 		return null;
+	}
+	public async updatePasswordByUserId(_id: string, password: string): Promise<boolean> {
+		try {
+			const updateResult = await UserModel.updateOne({ _id }, { password });
+			if (updateResult) {
+				return true;
+			}
+		} catch (err: any) {
+			console.error(err); // TODO: transfer to a logger
+			throw new Error(err.message);
+		}
+
+		return false;
 	}
 	public async deleteUserById(_id: string): Promise<void> {
 		await UserModel.deleteOne({ _id });

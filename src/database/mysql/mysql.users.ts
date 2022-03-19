@@ -33,14 +33,26 @@ class Users implements IUsersDatabase {
 					console.error(err); // TODO: transfer to a logger
 					reject(new Error(`Error retrieving user by ID: ${_id}`));
 				} else {
-					return resolve(results as User);
+					return resolve(results[0] as User);
+				}
+			});
+		});
+	}
+	public async getUserByUsername(username: string): Promise<User | null> {
+		return new Promise((resolve, reject) => {
+			this._connection.query(`select * from users where username = '${username}'`, (err, results) => {
+				if (err) {
+					console.error(err); // TODO: transfer to a logger
+					reject(new Error(`Error retrieving user by Username: ${username}`));
+				} else {
+					resolve(results[0] as User);
 				}
 			});
 		});
 	}
 	public async createUser(user: CreateUser): Promise<User | null> {
 		return new Promise((resolve, reject) => {
-			const sql = 'INSERT INTO users (first, last) VALUES (?, ?)';
+			const sql = 'INSERT INTO users (first, last, email, username, password) VALUES (?, ?, ?, ?, ?)';
 			this._connection.query(sql, Object.values(user), async (err, results) => {
 				if (err) {
 					console.error(err); // TODO: transfer to a logger
@@ -82,6 +94,19 @@ class Users implements IUsersDatabase {
 				} else {
 					const updated = await this.getUserById(_id);
 					resolve(updated);
+				}
+			});
+		});
+	}
+	public async updatePasswordByUserId(_id: string, password: string): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			const sql = `update users set password = '${password}' where id = ${_id}`;
+			this._connection.query(sql, async (err) => {
+				if (err) {
+					console.error(err); // TODO: transfer to a logger
+					reject(new Error('Error updating user.'));
+				} else {
+					resolve(true);
 				}
 			});
 		});

@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
 
 import { CreateUser, UpdateUser, User } from '../../database/models/user';
-import DatabaseConnection from '../../database/mongoose';
-// import DatabaseConnection from '../../database/mysql';
+import DatabaseConnection from '../../database/connection';
+import authentication from '../../shared/authentication';
 
 class UsersController {
 	async getUsers(req: Request, res: Response): Promise<void> {
 		try {
 			const result = await DatabaseConnection.users.getUsers();
 			if (result) {
+				result.forEach((user) => {
+					user = authentication.removeUserAuthenticationData(user);
+				});
 				res.status(200).json(result);
 				return;
 			} else {
@@ -22,8 +25,9 @@ class UsersController {
 	}
 	async getUserById(req: Request, res: Response): Promise<void> {
 		try {
-			const result: User | null = await DatabaseConnection.users.getUserById(req.params.id);
+			let result: User | null = await DatabaseConnection.users.getUserById(req.params.id);
 			if (result) {
+				result = authentication.removeUserAuthenticationData(result);
 				res.status(200).json(result);
 				return;
 			} else {
@@ -37,6 +41,11 @@ class UsersController {
 	async createUser(req: Request, res: Response): Promise<void> {
 		try {
 			const user: CreateUser = req.body as CreateUser;
+			if (!authentication.isPasswordStrengthSecure(user.password)) {
+				res.status(400).json({ error: 'Password does not meet required strength.' });
+				return;
+			}
+			user.password = await authentication.encryptPassword(user.password);
 			const result: User | null = await DatabaseConnection.users.createUser(user);
 			res.status(201).json(result);
 			return;
@@ -50,6 +59,21 @@ class UsersController {
 			const result: User | null = await DatabaseConnection.users.updateUserById(req.params.id, user);
 			res.status(200).json(result);
 			return;
+		} catch (err: any) {
+			res.status(500).json({ error: err.message });
+			return;
+		}
+	}
+	async updatePasswordByUserId(req: Request, res: Response): Promise<void> {
+		const { id } = req.params;
+		let { password } = req.body;
+		password = await authentication.encryptPassword(password);
+		try {
+			const response: boolean = await DatabaseConnection.users.updatePasswordByUserId(id, password);
+			if (response) {
+				res.status(200).json({ message: 'success' });
+				return;
+			}
 		} catch (err: any) {
 			res.status(500).json({ error: err.message });
 			return;

@@ -1,11 +1,9 @@
 import * as dotenv from 'dotenv';
+dotenv.config();
 
 import server from './api';
 import { IPortfolioDatabase } from './database/interfaces/portfolio.database';
-import DatabaseConnection from './database/mongoose';
-// import DatabaseConnection from './database/mysql';
-
-dotenv.config();
+import DatabaseConnection from './database/connection';
 
 (async () => {
 	try {
