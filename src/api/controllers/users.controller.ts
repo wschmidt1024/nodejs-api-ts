@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
 import { CreateUser, UpdateUser, User } from '../../database/models/user';
-// import DatabaseConnection from '../../database/mongoose';
-import DatabaseConnection from '../../database/mysql';
+import DatabaseConnection from '../../database/mongoose';
+// import DatabaseConnection from '../../database/mysql';
 
 class UsersController {
 	async getUsers(req: Request, res: Response): Promise<void> {

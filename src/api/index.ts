@@ -1,4 +1,7 @@
 import express, { Request, Response } from 'express';
+import { graphqlHTTP } from 'express-graphql';
+
+import { graphResolvers, graphSchemas } from '../database/graphql/';
 
 import usersRouter from './routes/users.routes';
 
@@ -19,6 +22,15 @@ class App {
 			res.send('Portfolio API Home');
 		});
 		this.server.use('/users', usersRouter);
+		this.server.use('/graphql', graphqlHTTP((request, response) => ({
+			schema: graphSchemas,
+			rootValue: graphResolvers,
+			graphiql: true,
+			context: {
+				request,
+				response,
+			}
+		})));
 	}
 }
 
