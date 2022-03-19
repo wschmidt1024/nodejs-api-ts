@@ -65,12 +65,12 @@ class Users implements IUsersDatabase {
 			for (prop in user) {
 				set += idx > 0 ? ', ' : '';
 				switch (typeof (prop)) {
-				case 'string':
-					set += `${prop} = '${user[prop]}'`;
-					break;
-				default:
-					set += `${prop} = ${user[prop]}`;
-					break;
+					case 'string':
+						set += `${prop} = '${user[prop]}'`;
+						break;
+					default:
+						set += `${prop} = ${user[prop]}`;
+						break;
 				}
 				idx++;
 			}
