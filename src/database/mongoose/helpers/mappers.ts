@@ -6,6 +6,9 @@ export function UserDocument2User(model: IUserDocument): User | null {
 	return model ? {
 		id: model._id.toString(),
 		first: model.first,
-		last: model.last
+		last: model.last,
+		email: model.email,
+		username: model.username,
+		password: model.password
 	} : null;
 }

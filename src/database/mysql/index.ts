@@ -7,10 +7,10 @@ import Users from './mysql.users';
 
 class MySqlConnection implements IPortfolioDatabase {
 	private connection: mysql.Connection = mysql.createConnection({
-		host: 'localhost',
-		user: 'user',
-		password: 'password',
-		database: 'portfolio'
+		host: process.env.MYSQL_HOST,
+		user: process.env.MYSQL_USER,
+		password: process.env.MYSQL_PASSWORD,
+		database: process.env.MYSQL_DATABASE
 	});
 
 	public users: IUsersDatabase;

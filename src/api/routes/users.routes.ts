@@ -10,6 +10,7 @@ class UsersRoutes {
 		this.router.get('/:id', usersController.getUserById);
 		this.router.post('/', usersController.createUser);
 		this.router.put('/:id', usersController.updateUserById);
+		this.router.post('/:id/password', usersController.updatePasswordByUserId);
 		this.router.delete('/:id', usersController.deleteUserById);
 	}
 }
