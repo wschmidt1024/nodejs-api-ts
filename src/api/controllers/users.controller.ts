@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { InvalidDatabaseIdError } from '../../database/interfaces/errors';
 import { CreateUser, UpdateUser, User } from '../../database/models/user';
 import DatabaseConnection from '../../database/connection';
 import authentication from '../../shared/authentication';
@@ -35,7 +36,13 @@ class UsersController {
 				return;
 			}
 		} catch (err: any) {
-			res.status(500).json({ error: err.message });
+			if (err instanceof InvalidDatabaseIdError) {
+				res.status(400).json({ error: err.message });
+				return;
+			} else {
+				res.status(500).json({ error: `Error retrieving product by ID: ${req.params.id}.` });
+				return;
+			}
 		}
 	}
 	async createUser(req: Request, res: Response): Promise<void> {
@@ -46,9 +53,12 @@ class UsersController {
 				return;
 			}
 			user.password = await authentication.encryptPassword(user.password);
-			const result: User | null = await DatabaseConnection.users.createUser(user);
-			res.status(201).json(result);
-			return;
+			let result: User | null = await DatabaseConnection.users.createUser(user);
+			if (result) {
+				result = authentication.removeUserAuthenticationData(result);
+				res.status(201).json(result);
+				return;
+			}
 		} catch (err: any) {
 			res.status(500).json({ error: err.message });
 		}
@@ -56,12 +66,20 @@ class UsersController {
 	async updateUserById(req: Request, res: Response): Promise<void> {
 		try {
 			const user: UpdateUser = req.body as UpdateUser;
-			const result: User | null = await DatabaseConnection.users.updateUserById(req.params.id, user);
-			res.status(200).json(result);
-			return;
+			let result: User | null = await DatabaseConnection.users.updateUserById(req.params.id, user);
+			if (result) {
+				result = authentication.removeUserAuthenticationData(result);
+				res.status(200).json(result);
+				return;
+			}
 		} catch (err: any) {
-			res.status(500).json({ error: err.message });
-			return;
+			if (err instanceof InvalidDatabaseIdError) {
+				res.status(400).json({ error: err.message });
+				return;
+			} else {
+				res.status(500).json({ error: `Error retrieving product by ID: ${req.params.id}.` });
+				return;
+			}
 		}
 	}
 	async updatePasswordByUserId(req: Request, res: Response): Promise<void> {

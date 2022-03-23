@@ -5,7 +5,7 @@ import { UserDocument2User } from './helpers/mappers';
 import UserModel, { IUserDocument } from './schemas/user.schema';
 
 class Users implements IUsersDatabase {
-	public async getUsers(): Promise<User[] | null> {
+	public async getUsers(): Promise<User[]> {
 		try {
 			const userDocuments: IUserDocument[] = await UserModel.find();
 			if (Array.isArray(userDocuments)) {
@@ -24,7 +24,7 @@ class Users implements IUsersDatabase {
 			throw new Error('Error occurred getting users.');
 		}
 
-		return null;
+		return new Array();
 	}
 	public async getUserById(_id: string): Promise<User | null> {
 		const userDocument: IUserDocument | null = await UserModel.findOne({ _id });
