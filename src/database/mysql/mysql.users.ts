@@ -27,7 +27,6 @@ class Users implements IUsersDatabase {
 						resolve(users);
 						return;
 					}
-					console.warn('Failed to get users. Instead received:', results); // TODO: transfer to a logger
 					resolve(new Array());
 				}
 			);
@@ -51,7 +50,6 @@ class Users implements IUsersDatabase {
 						resolve(MySqlDocument2User(results[0]));
 						return;
 					}
-					console.warn('Failed to get user by ID. Instead received:', results); // TODO: transfer to a logger
 					resolve(null);
 				}
 			);
@@ -72,7 +70,6 @@ class Users implements IUsersDatabase {
 						resolve(MySqlDocument2User(results[0]));
 						return;
 					}
-					console.warn('Failed to user by username. Instead received:', results); // TODO: transfer to a logger
 					resolve(null);
 				}
 			);
@@ -139,6 +136,9 @@ class Users implements IUsersDatabase {
 		});
 	}
 	public async updatePasswordByUserId(_id: string, password: string): Promise<boolean> {
+		if (isNaN(+_id)) {
+			throw new InvalidDatabaseIdError('Invalid User ID.');
+		}
 		return new Promise((resolve, reject) => {
 			this._connection.query(
 				'UPDATE users SET password = ? WHERE id = ?',
@@ -157,6 +157,9 @@ class Users implements IUsersDatabase {
 		});
 	}
 	public async deleteUserById(_id: string): Promise<void> {
+		if (isNaN(+_id)) {
+			throw new InvalidDatabaseIdError('Invalid User ID.');
+		}
 		return new Promise((resolve, reject) => {
 			this._connection.query(
 				'DELETE FROM users WHERE id = ?',
