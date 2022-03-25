@@ -3,7 +3,7 @@ import { CreateUser, User, UpdateUser } from '../models/user';
 
 export interface IUsersDatabase
 {
-    getUsers(): Promise<User[] | null>;
+    getUsers(): Promise<User[]>;
     getUserById(_id: string): Promise<User | null>;
     getUserByUsername(username: string): Promise<User | null>
     createUser(user: CreateUser): Promise<User | null>;
