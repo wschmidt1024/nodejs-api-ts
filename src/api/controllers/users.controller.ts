@@ -71,6 +71,8 @@ class UsersController {
 				res.status(200).json(result);
 				return;
 			}
+			res.status(404).json({ error: `The user with ID '${req.params.id}' was not found.` });
+			return;
 		} catch (err: any) {
 			if (err instanceof InvalidDatabaseIdError) {
 				res.status(400).json({ error: err.message });
